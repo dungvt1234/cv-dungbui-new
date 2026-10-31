@@ -14,3 +14,13 @@ html{scroll-padding-top:20px}body{overflow-x:clip}.hero>*{min-width:0}.portrait-
 @media(max-width:900px){.portrait>.starfield{display:block}}
 
 @media(max-width:900px){.portrait-frame .robot-layer{mask-image:radial-gradient(circle 100px at var(--x) var(--y),#000 0%,#000 35%,transparent 80%);-webkit-mask-image:radial-gradient(circle 100px at var(--x) var(--y),#000 0%,#000 35%,transparent 80%)}.portrait.active .robot-layer{mask-image:none;-webkit-mask-image:none}.touch-hint{max-width:300px;margin-inline:auto;text-align:center}}
+
+/* Keep the portrait's signature rings alive on touch screens. */
+@media(max-width:900px) and (prefers-reduced-motion:no-preference){
+.portrait .halo-ring{animation:halo-spin 42s linear infinite;box-shadow:none}
+.portrait .holo-halo{opacity:.7}
+.portrait .orbit{animation:mobile-orbit-turn 56s linear infinite}
+.portrait .orbit-two{animation:mobile-orbit-turn 72s linear infinite reverse}
+.portrait .orbit:after{animation:none;box-shadow:none;opacity:.7}
+}
+@keyframes mobile-orbit-turn{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
