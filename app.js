@@ -2,7 +2,14 @@ const portrait=document.querySelector('.portrait'),frame=document.querySelector(
 let raf=0,tx=0,ty=0,cx=0,cy=0,initial=true;const reduce=window.matchMedia('(prefers-reduced-motion: reduce)');
 function draw(){cx+=(tx-cx)*.22;cy+=(ty-cy)*.22;frame.style.setProperty('--x',`${cx}px`);frame.style.setProperty('--y',`${cy}px`);if(Math.abs(tx-cx)+Math.abs(ty-cy)>.5&&!reduce.matches)raf=requestAnimationFrame(draw);else{frame.style.setProperty('--x',`${tx}px`);frame.style.setProperty('--y',`${ty}px`);raf=0}}
 function point(e){const r=frame.getBoundingClientRect();tx=e.clientX-r.left;ty=e.clientY-r.top;if(initial){cx=tx;cy=ty;initial=false}frame.classList.add('hovering');if(!raf)draw()}
-frame.addEventListener('pointermove',e=>{if(e.pointerType==='mouse'&&matchMedia('(hover:hover) and (pointer:fine)').matches)point(e)});frame.addEventListener('pointerleave',()=>{frame.classList.remove('hovering');initial=true});
+let touchPointer=null,touchFade=0;
+function endTouch(immediate=false){touchPointer=null;clearTimeout(touchFade);if(immediate){frame.classList.remove('hovering');initial=true}else touchFade=setTimeout(()=>{frame.classList.remove('hovering');initial=true},900)}
+frame.addEventListener('pointerdown',e=>{if(e.pointerType==='touch'||e.pointerType==='pen'){clearTimeout(touchFade);touchPointer=e.pointerId;point(e)}},{passive:true});
+frame.addEventListener('pointermove',e=>{if(e.pointerId===touchPointer||(e.pointerType==='mouse'&&matchMedia('(hover:hover) and (pointer:fine)').matches))point(e)},{passive:true});
+frame.addEventListener('pointerup',e=>{if(e.pointerId===touchPointer)endTouch()},{passive:true});
+frame.addEventListener('pointercancel',()=>endTouch(true),{passive:true});
+frame.addEventListener('pointerleave',e=>{if(e.pointerType==='mouse'){frame.classList.remove('hovering');initial=true}});
+
 
 toggle.addEventListener('click',()=>{const active=portrait.classList.toggle('active');toggle.setAttribute('aria-pressed',String(active));toggle.textContent=active?'✳  Trở về chân dung':'✳  Hiện người máy'});
 const messages={business:'Kinh nghiệm bán hàng và phân phối vật liệu xây dựng.',web:'Làm website và ứng dụng quản lý.',ai:'Dùng AI để tạo nội dung và tự động hóa công việc.'};document.querySelectorAll('.cap').forEach(button=>button.addEventListener('click',()=>{document.querySelectorAll('.cap').forEach(b=>{b.classList.remove('active');b.setAttribute('aria-pressed','false')});button.classList.add('active');button.setAttribute('aria-pressed','true');document.querySelector('.cap-detail').textContent=messages[button.dataset.cap]}));
